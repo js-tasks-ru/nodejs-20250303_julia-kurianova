@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 import { Task, TaskStatus } from "./task.model";
 
 @Injectable()
@@ -47,6 +51,10 @@ export class TasksService {
         throw new BadRequestException(`Status ${status} does not exist.`);
       }
       filteredTasks = this.tasks.filter((task) => task.status === status);
+
+      if (!filteredTasks.length) {
+        throw new NotFoundException(`Task with status:${status} not found`);
+      }
     }
 
     if (page <= 0 || limit <= 0) {
