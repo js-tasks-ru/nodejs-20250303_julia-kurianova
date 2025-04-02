@@ -33,7 +33,6 @@ export class TasksService {
 
   async update(id: number, updateTaskDto: UpdateTaskDto) {
     const task = await this.findOne(id);
-    // console.log("task upd: ", task);
 
     if (!task) throw new NotFoundException(`task with ${id} not found`);
 
@@ -58,7 +57,6 @@ export class TasksService {
 
   async remove(id: number): Promise<void> {
     const task = await this.findOne(id);
-    console.log("task", task);
     if (!task) throw new NotFoundException(`task with ${id} not found`);
     await this.taskRepository.delete(id);
   }
