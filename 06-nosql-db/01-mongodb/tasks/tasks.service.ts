@@ -25,26 +25,10 @@ export class TasksService {
   }
 
   async update(id: ObjectId, updateTaskDto: UpdateTaskDto) {
-    const task = await this.taskModel.findById(id);
-
+    const task = await this.taskModel.findByIdAndUpdate(id, updateTaskDto, {
+      new: true,
+    });
     if (!task) throw new NotFoundException(`task with ${id} not found`);
-
-    if (updateTaskDto.title && updateTaskDto.title !== task.title) {
-      task.title = updateTaskDto.title;
-    }
-
-    if (
-      updateTaskDto.description &&
-      updateTaskDto.description !== task.description
-    ) {
-      task.description = updateTaskDto.description;
-    }
-
-    if (updateTaskDto.isCompleted !== task.isCompleted) {
-      task.isCompleted = updateTaskDto.isCompleted;
-    }
-
-    await this.taskModel.updateOne(task);
     return task;
   }
 
@@ -52,6 +36,6 @@ export class TasksService {
     const task = await this.taskModel.findById(id);
     if (!task) throw new NotFoundException(`task with ${id} not found`);
 
-    await this.taskModel.deleteOne(id);
+    await this.taskModel.deleteOne({ _id: id });
   }
 }
