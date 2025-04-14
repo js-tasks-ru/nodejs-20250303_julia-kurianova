@@ -8,6 +8,9 @@ export class User {
   @Column()
   displayName: string;
 
-  @Column()
+  @Column({ nullable: true })
   avatar: string;
+
+  @Column({ nullable: true })
+  refreshToken: string;
 }
