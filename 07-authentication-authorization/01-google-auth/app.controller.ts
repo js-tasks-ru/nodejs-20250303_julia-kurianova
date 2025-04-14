@@ -35,28 +35,50 @@ export class AppController {
                     'Authorization': 'Bearer ' + token
                   }
                 });
-
-                if (!response.ok) {
-                  throw new Error('Unauthorized');
-                }
-
+                if (response.ok) {
                 const data = await response.json();
 
-                document.getElementById("content").innerHTML = \`
+                  document.getElementById("content").innerHTML = \`
                   Welcome, \${data.displayName}!<br>
                   <img src="\${data.avatar}" alt="avatar" />
-                \`;
-              } catch (err) {
+                  \`;
+                  return;
+                }
+
+                if (response.status === 401) {
+                    const refreshToken = localStorage.getItem('refreshToken');
+                    if (!refreshToken) {
+                      throw new Error('No refresh token available.');
+                    }
+
+                    const res = await fetch('/auth/refresh', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                      },
+                      body: JSON.stringify({ refreshToken }),
+                      },
+                    );
+
+                  if (!res.ok) {
+                      throw new Error('Failed to refresh token. Please log in again.');
+                  }
+
+                  const { accessToken, refreshToken: newRefreshToken } = await res.json();
+                  // Store new tokens
+                  localStorage.setItem('token', accessToken);
+                  localStorage.setItem('refreshToken', newRefreshToken);
+              }}
+               catch (err) {
                 document.getElementById("content").innerHTML = \`
                   <button onclick="window.location.href='/auth/google'">
                     Login via Google
                   </button>
                 \`;
               }
-            })();
+          })();
           </script>
         </body>
-      </html>
-    `;
+      </html> `;
   }
 }
